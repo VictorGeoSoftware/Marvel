@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import com.test.marvel.vallettest.di.mainactivity.MainActivityModule
 import com.test.marvel.vallettest.models.Comic
@@ -40,19 +38,6 @@ class MainActivity : AppCompatActivity(), MarvelView {
         val myGridLayoutManager = GridLayoutManager(this, 2)
         lstComics?.layoutManager = myGridLayoutManager
         lstComics.addItemDecoration(SpaceDecorator(MyUtils.getDpFromValue(this, 10)))
-        btnMore.hide()
-
-//        lstComics?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//
-//                if (lstComics.layoutManager.itemCount == myGridLayoutManager.findLastVisibleItemPosition() + 1) {
-//                    btnMore.show()
-//                } else if (btnMore.isShown) {
-//                    btnMore.hide()
-//                }
-//            }
-//        })
     }
 
     override fun onDestroy() {
