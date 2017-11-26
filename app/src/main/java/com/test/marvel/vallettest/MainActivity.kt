@@ -42,17 +42,17 @@ class MainActivity : AppCompatActivity(), MarvelView {
         lstComics.addItemDecoration(SpaceDecorator(MyUtils.getDpFromValue(this, 10)))
         btnMore.hide()
 
-        lstComics?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if (lstComics.layoutManager.itemCount == myGridLayoutManager.findLastVisibleItemPosition() + 1) {
-                    btnMore.show()
-                } else if (btnMore.isShown) {
-                    btnMore.hide()
-                }
-            }
-        })
+//        lstComics?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+//                super.onScrollStateChanged(recyclerView, newState)
+//
+//                if (lstComics.layoutManager.itemCount == myGridLayoutManager.findLastVisibleItemPosition() + 1) {
+//                    btnMore.show()
+//                } else if (btnMore.isShown) {
+//                    btnMore.hide()
+//                }
+//            }
+//        })
     }
 
     override fun onDestroy() {

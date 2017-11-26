@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.View
 import com.squareup.picasso.Picasso
 import com.test.marvel.vallettest.di.detailactivity.DetailComicActivityModule
