@@ -1,0 +1,34 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+ext {
+    marvel_base_url = '"https://gateway.marvel.com"'
+    marvel_public_key = '"9635f7c45e5068dc18f84a5106800e06"'
+    marvel_private_key = '"d4d431e2e27e1632a83c0ddba31d54b30a5e2335"'
+    marvel_character_id = '1009220'
+}
+
+buildscript {
+    ext.kotlin_version = '1.1.60'
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
