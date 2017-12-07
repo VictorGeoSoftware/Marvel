@@ -6,6 +6,7 @@ import javax.inject.Singleton
 
 /**
  * Created by victor on 13/11/17.
+ *
  */
 
 @Subcomponent(modules = arrayOf(MainActivityModule::class))

@@ -5,10 +5,11 @@ ext {
     marvel_public_key = '"9635f7c45e5068dc18f84a5106800e06"'
     marvel_private_key = '"d4d431e2e27e1632a83c0ddba31d54b30a5e2335"'
     marvel_character_id = '1009220'
+    android_support_version = '27.0.2'
 }
 
 buildscript {
-    ext.kotlin_version = '1.1.60'
+    ext.kotlin_version = '1.2.0'
     repositories {
         google()
         jcenter()

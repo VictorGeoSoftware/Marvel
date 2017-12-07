@@ -34,7 +34,6 @@ class MarvelPresenterImpl:MarvelPresenter, MarvelInteractor.RequestListener {
     }
 
     override fun onDestroy() {
-        // TODO :: apagar el rx de las llamadas
         marvelInteractor?.disposeObservables()
     }
 
