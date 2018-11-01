@@ -18,7 +18,6 @@
             android:id="@+id/imgComic"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:maxWidth="100dp"
             android:layout_gravity="center"/>
 
         <TextView

@@ -6,7 +6,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
 import com.training.marvel.source.di.detailactivity.DetailComicActivityModule
 import com.training.marvel.source.models.Comic
 import com.training.marvel.source.models.Constants
@@ -71,7 +71,7 @@ class DetailComicActivity:AppCompatActivity(), MarvelView {
     override fun onComicDetailReceived(comic: Comic) {
         progressBar.visibility = View.INVISIBLE
         val comicImageUrl = comic.thumbnail.path + "." + comic.thumbnail.extension
-        Picasso.with(this).load(comicImageUrl).into(imgComicBig)
+        Glide.with(this).load(comicImageUrl).into(imgComicBig)
         txtDescription.text = comic.description
         lstCreators.adapter = CreatorsAdapter(comic.creators.items)
         lstCharacters.adapter = CharactersAdapter(comic.characters.items)

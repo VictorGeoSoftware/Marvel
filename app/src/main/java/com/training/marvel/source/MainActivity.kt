@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
 import android.view.View
 import com.training.marvel.source.di.mainactivity.MainActivityModule
 import com.training.marvel.source.models.CharacterError
@@ -17,7 +16,6 @@ import com.training.marvel.source.presenters.MarvelView
 import com.training.marvel.source.ui.ComicsAdapter
 import com.training.marvel.source.ui.SpaceDecorator
 import com.training.marvel.source.utils.MyUtils
-import com.training.marvel.source.utils.trace
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
