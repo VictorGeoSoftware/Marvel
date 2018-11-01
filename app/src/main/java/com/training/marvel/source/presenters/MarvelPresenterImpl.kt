@@ -1,6 +1,9 @@
 package com.training.marvel.source.presenters
 
 import android.content.Context
+import arrow.core.Either
+import arrow.effects.IO
+import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
 
 /**
@@ -8,11 +11,11 @@ import com.training.marvel.source.models.Comic
  *
  */
 
-class MarvelPresenterImpl:MarvelPresenter, MarvelInteractor.RequestListener {
+class MarvelPresenterImpl(context: Context) :MarvelPresenter, MarvelInteractor.RequestListener {
     var marvelView: MarvelView? = null
     var marvelInteractor:MarvelInteractor? = null
 
-    constructor(context: Context) {
+    init {
         this.marvelInteractor = MarvelInteractorImpl(context)
     }
 
@@ -23,10 +26,28 @@ class MarvelPresenterImpl:MarvelPresenter, MarvelInteractor.RequestListener {
         this.marvelView = marvelView
     }
 
-    override fun getSuperHeroComics() {
-        marvelView?.showProgressBar()
-        marvelInteractor?.getSuperHeroComics(this)
-    }
+    override fun getSuperHeroComics(): IO<Either<CharacterError, List<Comic>>> =
+        marvelInteractor!!.getSuperHeroComics().map { it ->
+            it.map { discardNonValidComics(it) } }
+
+
+
+
+
+    //----- First approach
+//    override fun getSuperHeroComics(): Either<CharacterError, ArrayList<Comic>> {
+//        marvelView?.showProgressBar()
+//
+//        return marvelInteractor!!.getSuperHeroComics().fold(
+//                {
+//                    Log.i(this.javaClass.name, "getSuperHeroComics - error :: $it")
+//                    Left(it)
+//                },
+//                {
+//                    Log.i(this.javaClass.name, "getSuperHeroComics - ok! :: $it")
+//                    Right(it) // we can set filter logic, etc
+//                })
+//    }
 
     override fun getComicDetail(comicId: Long) {
         marvelView?.showProgressBar()
@@ -41,10 +62,8 @@ class MarvelPresenterImpl:MarvelPresenter, MarvelInteractor.RequestListener {
 
     // --------------------------------------------------------------------------------------------------------------------------------------------
     // ------------------------------------------------------------ INTERACTOR INERFACE -----------------------------------------------------------
-    override fun onComicListReceived(comicList:ArrayList<Comic>?) {
-        if (comicList != null) {
-            marvelView?.onSuperHeroComicsReceived(comicList)
-        }
+    override fun onComicListReceived(comicList:ArrayList<Comic>) {
+        marvelView?.onSuperHeroComicsReceived(comicList)
     }
 
     override fun onComicListError(error:String) {
@@ -58,4 +77,14 @@ class MarvelPresenterImpl:MarvelPresenter, MarvelInteractor.RequestListener {
     override fun onComicDetailError(error:String) {
         marvelView?.onComicDetailError(error)
     }
+
+
+
+    // --------------------------------------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------ RESULT HELPERS ----------------------------------------------------------------
+    private fun discardNonValidComics(comics: ArrayList<Comic>) =
+        comics.filter {
+            !it.title.isEmpty()
+        }
+
 }

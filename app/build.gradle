@@ -61,12 +61,18 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     // Kategory
+    kapt    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
     implementation "io.arrow-kt:arrow-core:$arrow_version"
     implementation "io.arrow-kt:arrow-syntax:$arrow_version"
     implementation "io.arrow-kt:arrow-typeclasses:$arrow_version"
     implementation "io.arrow-kt:arrow-data:$arrow_version"
     implementation "io.arrow-kt:arrow-instances-core:$arrow_version"
     implementation "io.arrow-kt:arrow-instances-data:$arrow_version"
-    kapt    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
+    implementation "io.arrow-kt:arrow-effects:$arrow_version"
+    implementation "io.arrow-kt:arrow-syntax:$arrow_version"
+    implementation "io.arrow-kt:arrow-mtl:$arrow_version"
 }
