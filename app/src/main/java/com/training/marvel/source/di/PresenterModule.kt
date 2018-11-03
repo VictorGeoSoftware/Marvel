@@ -1,6 +1,5 @@
 package com.training.marvel.source.di
 
-import android.content.Context
 import com.training.marvel.source.presenters.MarvelPresenter
 import com.training.marvel.source.presenters.MarvelPresenterImpl
 import dagger.Module
@@ -17,5 +16,5 @@ class PresenterModule {
 
     @Provides
     @Singleton
-    fun provideMarvelPresenter(context: Context):MarvelPresenter = MarvelPresenterImpl(context)
+    fun provideMarvelPresenter():MarvelPresenter = MarvelPresenterImpl()
 }

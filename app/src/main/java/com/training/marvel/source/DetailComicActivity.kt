@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.bumptech.glide.Glide
 import com.training.marvel.source.di.detailactivity.DetailComicActivityModule
+import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
 import com.training.marvel.source.models.Constants
 import com.training.marvel.source.presenters.MarvelPresenter
@@ -64,9 +65,13 @@ class DetailComicActivity:AppCompatActivity(), MarvelView {
         progressBar.visibility = View.VISIBLE
     }
 
-    override fun onSuperHeroComicsReceived(comicList: ArrayList<Comic>) { }
+    override fun onSuperHeroComicsReceived(comicList: List<Comic>) {
 
-    override fun onSuperHeroComicsError(error: String) { }
+    }
+
+    override fun onSuperHeroComicsError(error: CharacterError) {
+
+    }
 
     override fun onComicDetailReceived(comic: Comic) {
         progressBar.visibility = View.INVISIBLE

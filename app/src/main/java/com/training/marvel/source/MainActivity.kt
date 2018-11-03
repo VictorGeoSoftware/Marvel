@@ -7,10 +7,12 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
+import com.training.marvel.source.context.ComicsContext
 import com.training.marvel.source.di.mainactivity.MainActivityModule
 import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
 import com.training.marvel.source.models.Constants
+import com.training.marvel.source.network.MarvelRequest
 import com.training.marvel.source.presenters.MarvelPresenter
 import com.training.marvel.source.presenters.MarvelView
 import com.training.marvel.source.ui.ComicsAdapter
@@ -27,6 +29,7 @@ class MainActivity : AppCompatActivity(), MarvelView, ComicsAdapter.ComicAdapter
 
     private lateinit var comicsAdapter: ComicsAdapter
     @Inject lateinit var marvelPresenter: MarvelPresenter
+    @Inject lateinit var marvelRequest: MarvelRequest
 
     private var mComicList = ArrayList<Comic>()
 
@@ -45,18 +48,12 @@ class MainActivity : AppCompatActivity(), MarvelView, ComicsAdapter.ComicAdapter
 
         marvelPresenter.setView(this)
 
-        marvelPresenter.getSuperHeroComics().unsafeRunAsync { it.map { maybeComics ->
-            maybeComics.fold(
-                    { error -> drawError(error) },
-                    { comicList ->
-                        mComicList.clear()
-                        mComicList.addAll(comicList)
 
-                        runOnUiThread {
-                            comicsAdapter.notifyDataSetChanged()
-                        }
-                    })
-                }}
+    }
+
+    override fun onResume() {
+        super.onResume()
+        marvelPresenter.getSuperHeroComics().run(ComicsContext.GetComicContext(this, this, marvelRequest))
     }
 
     override fun onDestroy() {
@@ -80,19 +77,20 @@ class MainActivity : AppCompatActivity(), MarvelView, ComicsAdapter.ComicAdapter
         progressBar.visibility = View.VISIBLE
     }
 
-    override fun onSuperHeroComicsReceived(comicList:ArrayList<Comic>) {
-        progressBar.visibility = View.INVISIBLE
-        comicList.sort()
-
-        lstComics.adapter = ComicsAdapter(comicList, object : ComicsAdapter.ComicAdapterListener {
-            override fun onComicSelected(comic: Comic) {
-                launchComicDetailActivity(comic)
-            }
-        })
+    override fun onSuperHeroComicsReceived(comicList: List<Comic>) {
+        runOnUiThread {
+            progressBar.visibility = View.GONE
+            mComicList.clear()
+            mComicList.addAll(comicList)
+            comicsAdapter.notifyDataSetChanged()
+        }
     }
 
-    override fun onSuperHeroComicsError(error:String) {
-        Snackbar.make(mainLayout, error, Snackbar.LENGTH_SHORT).show()
+    override fun onSuperHeroComicsError(error: CharacterError) {
+        runOnUiThread {
+            progressBar.visibility = View.GONE
+            drawError(error)
+        }
     }
 
     override fun onComicDetailReceived(comic: Comic) { }

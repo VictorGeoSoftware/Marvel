@@ -1,5 +1,6 @@
 package com.training.marvel.source.presenters
 
+import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
 
 /**
@@ -9,8 +10,8 @@ import com.training.marvel.source.models.Comic
 
 interface MarvelView {
     fun showProgressBar()
-    fun onSuperHeroComicsReceived(comicList:ArrayList<Comic>)
-    fun onSuperHeroComicsError(error:String)
-    fun onComicDetailReceived(comic:Comic)
-    fun onComicDetailError(error:String)
+    fun onSuperHeroComicsReceived(comicList: List<Comic>)
+    fun onSuperHeroComicsError(error: CharacterError)
+    fun onComicDetailReceived(comic: Comic)
+    fun onComicDetailError(error: String)
 }

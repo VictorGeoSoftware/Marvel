@@ -1,9 +1,9 @@
 package com.training.marvel.source.presenters
 
-import android.content.Context
-import arrow.core.Either
-import arrow.effects.IO
-import com.training.marvel.source.models.CharacterError
+import arrow.data.ReaderApi
+import arrow.data.flatMap
+import arrow.data.map
+import com.training.marvel.source.context.ComicsContext
 import com.training.marvel.source.models.Comic
 
 /**
@@ -11,13 +11,9 @@ import com.training.marvel.source.models.Comic
  *
  */
 
-class MarvelPresenterImpl(context: Context) :MarvelPresenter, MarvelInteractor.RequestListener {
-    var marvelView: MarvelView? = null
-    var marvelInteractor:MarvelInteractor? = null
-
-    init {
-        this.marvelInteractor = MarvelInteractorImpl(context)
-    }
+class MarvelPresenterImpl : MarvelPresenter, MarvelInteractor.RequestListener {
+    private var marvelView: MarvelView? = null
+    private var marvelInteractor: MarvelInteractor = MarvelInteractorImpl()
 
 
     // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -26,36 +22,26 @@ class MarvelPresenterImpl(context: Context) :MarvelPresenter, MarvelInteractor.R
         this.marvelView = marvelView
     }
 
-    override fun getSuperHeroComics(): IO<Either<CharacterError, List<Comic>>> =
-        marvelInteractor!!.getSuperHeroComics().map { it ->
-            it.map { discardNonValidComics(it) } }
-
-
-
-
-
-    //----- First approach
-//    override fun getSuperHeroComics(): Either<CharacterError, ArrayList<Comic>> {
-//        marvelView?.showProgressBar()
-//
-//        return marvelInteractor!!.getSuperHeroComics().fold(
-//                {
-//                    Log.i(this.javaClass.name, "getSuperHeroComics - error :: $it")
-//                    Left(it)
-//                },
-//                {
-//                    Log.i(this.javaClass.name, "getSuperHeroComics - ok! :: $it")
-//                    Right(it) // we can set filter logic, etc
-//                })
-//    }
+    override fun getSuperHeroComics() = ReaderApi.ask<ComicsContext.GetComicContext>().flatMap { (_, view: MarvelView) ->
+        view.showProgressBar()
+        marvelInteractor.getSuperHeroComics().map { io ->
+            io.unsafeRunAsync {
+                it.map { maybeComics ->
+                    maybeComics.fold(
+                            { error ->  view.onSuperHeroComicsError(error) },
+                            { success -> view.onSuperHeroComicsReceived(success) })
+                }
+            }
+        }
+    }
 
     override fun getComicDetail(comicId: Long) {
         marvelView?.showProgressBar()
-        marvelInteractor?.getComicDetail(comicId, this)
+        marvelInteractor.getComicDetail(comicId, this)
     }
 
     override fun onDestroy() {
-        marvelInteractor?.disposeObservables()
+        marvelInteractor.disposeObservables()
     }
 
 
@@ -67,7 +53,7 @@ class MarvelPresenterImpl(context: Context) :MarvelPresenter, MarvelInteractor.R
     }
 
     override fun onComicListError(error:String) {
-        marvelView?.onSuperHeroComicsError(error)
+//        marvelView?.onSuperHeroComicsError(error)
     }
 
     override fun onComicDetailsReceived(comic:Comic) {
@@ -82,7 +68,7 @@ class MarvelPresenterImpl(context: Context) :MarvelPresenter, MarvelInteractor.R
 
     // --------------------------------------------------------------------------------------------------------------------------------------------
     // ------------------------------------------------------------ RESULT HELPERS ----------------------------------------------------------------
-    private fun discardNonValidComics(comics: ArrayList<Comic>) =
+    private fun discardNonValidComics(comics: List<Comic>) =
         comics.filter {
             !it.title.isEmpty()
         }
