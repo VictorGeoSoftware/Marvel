@@ -9,8 +9,5 @@ import com.training.marvel.source.context.ComicsContext
 interface MarvelPresenter {
     fun setView(marvelView: MarvelView)
     fun getSuperHeroComics(): Reader<ComicsContext.GetComicContext, Unit>
-    // ----- First approach
-//    fun getSuperHeroComics(): Either<CharacterError, ArrayList<Comic>>
-    fun getComicDetail(comicId:Long)
-    fun onDestroy()
+    fun getComicDetail(comicId:Long): Reader<ComicsContext.GetComicContext, Unit>
 }

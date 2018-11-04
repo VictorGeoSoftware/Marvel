@@ -23,5 +23,5 @@ interface MarvelRequest {
     fun getCharacterComics(@QueryMap params:HashMap<String, String>): Call<ComicDataWrapper>
 
     @GET("/v1/public/comics/{comicId}")
-    fun getComicDetail(@Path("comicId") comicId:Long, @QueryMap params:HashMap<String, String>): Observable<Response<ComicDataWrapper>>
+    fun getComicDetail(@Path("comicId") comicId:Long, @QueryMap params:HashMap<String, String>): Call<ComicDataWrapper>
 }

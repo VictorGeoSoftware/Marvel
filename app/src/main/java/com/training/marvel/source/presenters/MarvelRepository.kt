@@ -9,6 +9,5 @@ import com.training.marvel.source.models.Comic
 
 interface MarvelRepository {
     fun getSuperHeroComics(): Reader<ComicsContext.GetComicContext, IO<Either<CharacterError, List<Comic>>>>
-    fun getComicDetail(comicId:Long)
-    fun disposeObservables()
+    fun getComicDetail(comicId:Long): Reader<ComicsContext.GetComicContext, IO<Either<CharacterError, Comic>>>
 }

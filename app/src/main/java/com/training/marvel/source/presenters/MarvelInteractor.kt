@@ -13,16 +13,13 @@ import com.training.marvel.source.models.Comic
  */
 
 interface MarvelInteractor {
-    // ----- second approach
-//    fun getSuperHeroComics(): IO<Either<CharacterError, ArrayList<Comic>>>
     fun getSuperHeroComics(): Reader<ComicsContext.GetComicContext, IO<Either<CharacterError, List<Comic>>>>
-    fun getComicDetail(comicId:Long, requestListener: RequestListener)
-    fun disposeObservables()
+    fun getComicDetail(comicId:Long): Reader<ComicsContext.GetComicContext, IO<Either<CharacterError, Comic>>>
 
     interface RequestListener {
         fun onComicListReceived(comicList:ArrayList<Comic>)
-        fun onComicListError(error:String)
+        fun onComicListError(error: CharacterError)
         fun onComicDetailsReceived(comic:Comic)
-        fun onComicDetailError(error:String)
+        fun onComicDetailError(error: CharacterError)
     }
 }

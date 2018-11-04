@@ -1,9 +1,11 @@
 package com.training.marvel.source.presenters
 
+import android.content.Context
 import arrow.data.ReaderApi
 import arrow.data.flatMap
 import arrow.data.map
 import com.training.marvel.source.context.ComicsContext
+import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
 
 /**
@@ -11,7 +13,7 @@ import com.training.marvel.source.models.Comic
  *
  */
 
-class MarvelPresenterImpl : MarvelPresenter, MarvelInteractor.RequestListener {
+class MarvelPresenterImpl : MarvelPresenter {
     private var marvelView: MarvelView? = null
     private var marvelInteractor: MarvelInteractor = MarvelInteractorImpl()
 
@@ -35,42 +37,16 @@ class MarvelPresenterImpl : MarvelPresenter, MarvelInteractor.RequestListener {
         }
     }
 
-    override fun getComicDetail(comicId: Long) {
-        marvelView?.showProgressBar()
-        marvelInteractor.getComicDetail(comicId, this)
-    }
-
-    override fun onDestroy() {
-        marvelInteractor.disposeObservables()
-    }
-
-
-
-    // --------------------------------------------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------ INTERACTOR INERFACE -----------------------------------------------------------
-    override fun onComicListReceived(comicList:ArrayList<Comic>) {
-        marvelView?.onSuperHeroComicsReceived(comicList)
-    }
-
-    override fun onComicListError(error:String) {
-//        marvelView?.onSuperHeroComicsError(error)
-    }
-
-    override fun onComicDetailsReceived(comic:Comic) {
-        marvelView?.onComicDetailReceived(comic)
-    }
-
-    override fun onComicDetailError(error:String) {
-        marvelView?.onComicDetailError(error)
-    }
-
-
-
-    // --------------------------------------------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------ RESULT HELPERS ----------------------------------------------------------------
-    private fun discardNonValidComics(comics: List<Comic>) =
-        comics.filter {
-            !it.title.isEmpty()
+    override fun getComicDetail(comicId: Long) = ReaderApi.ask<ComicsContext.GetComicContext>().flatMap { (_: Context, view: MarvelView) ->
+        view.showProgressBar()
+        marvelInteractor.getComicDetail(comicId).map {io ->
+            io.unsafeRunAsync {
+                it.map { maybeComicDetail ->
+                    maybeComicDetail.fold(
+                            { error -> view.onComicDetailError(error) },
+                            { comicDetail -> view.onComicDetailReceived(comicDetail) })
+                }
+            }
         }
-
+    }
 }

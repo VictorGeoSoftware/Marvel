@@ -13,5 +13,5 @@ interface MarvelView {
     fun onSuperHeroComicsReceived(comicList: List<Comic>)
     fun onSuperHeroComicsError(error: CharacterError)
     fun onComicDetailReceived(comic: Comic)
-    fun onComicDetailError(error: String)
+    fun onComicDetailError(error: CharacterError)
 }

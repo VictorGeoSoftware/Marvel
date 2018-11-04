@@ -44,13 +44,6 @@ class MainActivity : AppCompatActivity(), MarvelView, ComicsAdapter.ComicAdapter
         lstComics.addItemDecoration(SpaceDecorator(MyUtils.getDpFromValue(this, 10)))
         comicsAdapter = ComicsAdapter(mComicList, this)
         lstComics.adapter = comicsAdapter
-
-
-        marvelPresenter.setView(this)
-
-
-        // TODO :: pasar la otra función a FP
-        // TODO :: Arreglar las dependencias malas
     }
 
     override fun onResume() {
@@ -97,9 +90,11 @@ class MainActivity : AppCompatActivity(), MarvelView, ComicsAdapter.ComicAdapter
 
     override fun onComicDetailReceived(comic: Comic) { }
 
-    override fun onComicDetailError(error: String) {
-        progressBar.visibility = View.INVISIBLE
-        Snackbar.make(mainLayout, error, Snackbar.LENGTH_SHORT).show()
+    override fun onComicDetailError(error: CharacterError) {
+        runOnUiThread {
+            progressBar.visibility = View.INVISIBLE
+            drawError(error)
+        }
     }
 
 
