@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity(), MarvelView, ComicsAdapter.ComicAdapter
         marvelPresenter.setView(this)
 
 
+        // TODO :: pasar la otra función a FP
+        // TODO :: Arreglar las dependencias malas
     }
 
     override fun onResume() {

@@ -15,7 +15,7 @@ import javax.inject.Singleton
  */
 
 @Singleton
-@Component(modules = arrayOf(AppModule::class, NetworkModule::class, PresenterModule::class))
+@Component(modules = [AppModule::class, NetworkModule::class, PresenterModule::class])
 interface AppComponent {
     fun inject(application: Application)
     fun inject(marvelInteractorImpl: MarvelInteractorImpl)

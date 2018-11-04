@@ -6,7 +6,7 @@ ext {
     marvel_private_key = '"d4d431e2e27e1632a83c0ddba31d54b30a5e2335"'
     marvel_character_id = '1009220'
     android_support_version = '28.0.0'
-    ext.coroutinesVersion = '0.16'
+    ext.coroutinesVersion = '0.30.2-eap13'
 }
 
 buildscript {

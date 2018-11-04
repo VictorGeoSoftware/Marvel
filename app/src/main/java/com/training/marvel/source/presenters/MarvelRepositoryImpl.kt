@@ -16,8 +16,7 @@ import com.training.marvel.source.context.ComicsContext
 import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
 import com.training.marvel.source.utils.MyUtils
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -71,8 +70,13 @@ class MarvelRepositoryImpl: MarvelRepository {
     // --------------------------------------------------------------------------------------------------------------------------------------------
     // ------------------------------------------------------------ HELPER FUNCTIONS --------------------------------------------------------------
     private fun <F, A, B> runInAsyncContext(f: () -> A, onError: (Throwable) -> B, onSuccess: (A) -> B, AC: Async<F>): Kind<F, B> {
+
         return AC.async {
-            async(CommonPool) {
+//            GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, null, {
+//                val result = Try { f() }.fold(onError, onSuccess)
+//                it(result.right())
+//            })
+            CoroutineScope(Dispatchers.Default).launch(Dispatchers.Default, CoroutineStart.DEFAULT) {
                 val result = Try { f() }.fold(onError, onSuccess)
                 it(result.right())
             }
