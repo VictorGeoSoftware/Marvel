@@ -51,11 +51,6 @@ class MainActivity : AppCompatActivity(), MarvelView, ComicsAdapter.ComicAdapter
         marvelPresenter.getSuperHeroComics().run(ComicsContext.GetComicContext(this, this, marvelRequest))
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        marvelPresenter.onDestroy()
-    }
-
 
 
     // -------------------------------------------------------------------------------------------------------------------------------------
