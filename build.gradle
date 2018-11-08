@@ -7,6 +7,7 @@ ext {
     marvel_character_id = '1009220'
     android_support_version = '28.0.0'
     ext.coroutinesVersion = '0.30.2-eap13'
+    ext.arrow_version = '0.8.0'
 }
 
 buildscript {

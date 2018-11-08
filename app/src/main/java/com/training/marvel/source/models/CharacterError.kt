@@ -6,3 +6,6 @@ sealed class CharacterError {
     object NotFoundError: CharacterError()
     object UnknownServerError: CharacterError()
 }
+
+typealias NoResultError = CharacterError.NoResultError
+typealias UnknownServerError = CharacterError.UnknownServerError

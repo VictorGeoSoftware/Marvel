@@ -1,20 +1,21 @@
 package com.training.marvel.source.presenters
 
 import arrow.Kind
-import arrow.core.Either
-import arrow.core.Try
-import arrow.core.left
-import arrow.core.right
+import arrow.core.*
 import arrow.data.Reader
 import arrow.data.ReaderApi
 import arrow.data.map
 import arrow.effects.IO
 import arrow.effects.fix
 import arrow.effects.typeclasses.Async
+import arrow.instances.either.monad.monad
+import arrow.typeclasses.binding
 import com.training.marvel.source.BuildConfig
 import com.training.marvel.source.context.ComicsContext
 import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
+import com.training.marvel.source.models.ComicDataContainer
+import com.training.marvel.source.models.ComicDataWrapper
 import com.training.marvel.source.utils.MyUtils
 import com.training.marvel.source.utils.trace
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +26,16 @@ import java.util.*
 
 class MarvelRepositoryImpl: MarvelRepository {
 
+
+    fun getSuperHeroComicsT(maybeResponse: Either<CharacterError, ComicDataWrapper>): Either<CharacterError, List<Comic>> {
+        return Either.monad<CharacterError>().binding {
+            val wrapper = maybeResponse.bind()
+            val comicDataContainer = wrapper.data.toEither {
+                CharacterError.NoResultError
+            }.bind()
+            comicDataContainer.results
+        }.fix()
+    }
 
     override fun getSuperHeroComics(): Reader<ComicsContext.GetComicContext, IO<Either<CharacterError, List<Comic>>>> =
             ReaderApi.ask<ComicsContext.GetComicContext>().map { ctx ->
