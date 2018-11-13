@@ -2,24 +2,27 @@ package com.training.marvel.source.presenters
 
 import arrow.Kind
 import arrow.core.*
-import arrow.data.EitherT
-import arrow.data.Reader
-import arrow.data.ReaderApi
-import arrow.data.map
-import arrow.effects.IO
+import arrow.data.*
+import arrow.effects.*
+import arrow.effects.instances.io.async.async
+import arrow.effects.instances.io.monad.monad
+import arrow.effects.observablek.monad.monad
 import arrow.effects.typeclasses.Async
 import arrow.instances.either.monad.monad
+import arrow.instances.monad
 import arrow.typeclasses.binding
 import com.training.marvel.source.BuildConfig
 import com.training.marvel.source.context.ComicsContext
 import com.training.marvel.source.models.CharacterError
 import com.training.marvel.source.models.Comic
 import com.training.marvel.source.models.ComicDataWrapper
+import com.training.marvel.source.models.NoResultError
 import com.training.marvel.source.utils.MyUtils
 import com.training.marvel.source.utils.trace
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,6 +37,27 @@ class MarvelRepositoryImpl: MarvelRepository {
             }.bind()
             comicDataContainer.results
         }.fix()
+    }
+
+//    fun getSuperHeroComicsT(response: ComicDataWrapper): ObservableK<Either<CharacterError, List<Comic>>> {
+//
+//        return EitherT.monad<ForObservableK, CharacterError>(ObservableK.monad()).binding{
+//            val data = EitherT(response.data.toEither { NoResultError }).bind()
+//        }.value()
+//    }
+
+    fun getSuperHeroComicsTObservableK(response: ComicDataWrapper): ObservableK<Either<CharacterError, List<Comic>>> {
+        return EitherT.monad<ForObservableK, CharacterError>(ObservableK.monad()).binding {
+            val data = EitherT(ObservableK.just(response.data.toEither { CharacterError.NotFoundError })).bind()
+            data.results
+        }.value().fix()
+    }
+
+    fun getSuperHeroComicsTIO(response: ComicDataWrapper): IO<Either<CharacterError, List<Comic>>> {
+        EitherT.monad<ForIO, CharacterError>(IO.monad()).binding {
+            val data = EitherT(IO.async { response.data.fold( { Left(CharacterError.NotFoundError) }, { Right(response.data) }) }).bind()
+            data.results
+        }.value().fix()
     }
 
 
