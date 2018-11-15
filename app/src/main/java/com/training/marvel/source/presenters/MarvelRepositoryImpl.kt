@@ -4,7 +4,6 @@ import arrow.Kind
 import arrow.core.*
 import arrow.data.*
 import arrow.effects.*
-import arrow.effects.instances.io.async.async
 import arrow.effects.instances.io.monad.monad
 import arrow.effects.observablek.monad.monad
 import arrow.effects.typeclasses.Async
@@ -13,21 +12,21 @@ import arrow.instances.monad
 import arrow.typeclasses.binding
 import com.training.marvel.source.BuildConfig
 import com.training.marvel.source.context.ComicsContext
-import com.training.marvel.source.models.*
+import com.training.marvel.source.models.CharacterError
+import com.training.marvel.source.models.Comic
+import com.training.marvel.source.models.ComicDataWrapper
 import com.training.marvel.source.utils.MyUtils
 import com.training.marvel.source.utils.trace
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.coroutines.suspendCoroutine
 
 class MarvelRepositoryImpl: MarvelRepository {
 
 
-    fun getSuperHeroComicsExample(maybeResponse: Either<CharacterError, ComicDataWrapper>): Either<CharacterError, List<Comic>> {
+    private fun getSuperHeroComicsExample(maybeResponse: Either<CharacterError, ComicDataWrapper>): Either<CharacterError, List<Comic>> {
         return Either.monad<CharacterError>().binding {
             val wrapper = maybeResponse.bind()
             val comicDataContainer = wrapper.data.toEither {
@@ -37,21 +36,14 @@ class MarvelRepositoryImpl: MarvelRepository {
         }.fix()
     }
 
-//    fun getSuperHeroComicsT(response: ComicDataWrapper): ObservableK<Either<CharacterError, List<Comic>>> {
-//
-//        return EitherT.monad<ForObservableK, CharacterError>(ObservableK.monad()).binding{
-//            val data = EitherT(response.data.toEither { NoResultError }).bind()
-//        }.value()
-//    }
-
-    fun getSuperHeroComicsTObservableK(response: ComicDataWrapper): ObservableK<Either<CharacterError, List<Comic>>> {
+    private fun getSuperHeroComicsTObservableK(response: ComicDataWrapper): ObservableK<Either<CharacterError, List<Comic>>> {
         return EitherT.monad<ForObservableK, CharacterError>(ObservableK.monad()).binding {
             val data = EitherT(ObservableK.just(response.data.toEither { CharacterError.NotFoundError })).bind()
             data.results
         }.value().fix()
     }
 
-    fun getSuperHeroComicsTIO(response: ComicDataWrapper): IO<Either<CharacterError, List<Comic>>> {
+    private fun getSuperHeroComicsTIO(response: ComicDataWrapper): IO<Either<CharacterError, List<Comic>>> {
         return EitherT.monad<ForIO, CharacterError>(IO.monad()).binding {
             val data = EitherT(IO.just(response.data.toEither { CharacterError.NotFoundError })).bind()
             data.results
@@ -80,13 +72,7 @@ class MarvelRepositoryImpl: MarvelRepository {
                         },
                         onSuccess = {
                             if (it.isSuccessful) {
-                                // todo acabar lo de arriba y luego implementar aquí
-                                val comicDataContainer = it.body()!!.data.toEither {
-
-                                }.map {
-                                    it.results
-                                }
-
+                                getSuperHeroComicsTIO(it?.body()!!).fix()
                             } else {
                                 CharacterError.UnknownServerError.left()
                             }
@@ -115,12 +101,7 @@ class MarvelRepositoryImpl: MarvelRepository {
                         onSuccess = {
                             if (it.isSuccessful) {
                                 trace("getComicDetail - response successfull :: $it")
-
-                                if (it.body()?.data?.results!!.isNotEmpty()) {
-                                    it.body()?.data?.results!![0].right()
-                                } else {
-                                    CharacterError.NoResultError.left()
-                                }
+                                getSuperHeroComicsTIO(it?.body()!!)
 
                             } else {
                                 trace("getComicDetail - response failed :: $it")
