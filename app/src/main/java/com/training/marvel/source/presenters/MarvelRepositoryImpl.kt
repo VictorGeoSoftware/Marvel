@@ -13,10 +13,7 @@ import arrow.instances.monad
 import arrow.typeclasses.binding
 import com.training.marvel.source.BuildConfig
 import com.training.marvel.source.context.ComicsContext
-import com.training.marvel.source.models.CharacterError
-import com.training.marvel.source.models.Comic
-import com.training.marvel.source.models.ComicDataWrapper
-import com.training.marvel.source.models.NoResultError
+import com.training.marvel.source.models.*
 import com.training.marvel.source.utils.MyUtils
 import com.training.marvel.source.utils.trace
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +22,7 @@ import kotlinx.coroutines.async
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.suspendCoroutine
 
 class MarvelRepositoryImpl: MarvelRepository {
 
@@ -54,8 +52,8 @@ class MarvelRepositoryImpl: MarvelRepository {
     }
 
     fun getSuperHeroComicsTIO(response: ComicDataWrapper): IO<Either<CharacterError, List<Comic>>> {
-        EitherT.monad<ForIO, CharacterError>(IO.monad()).binding {
-            val data = EitherT(IO.async { response.data.fold( { Left(CharacterError.NotFoundError) }, { Right(response.data) }) }).bind()
+        return EitherT.monad<ForIO, CharacterError>(IO.monad()).binding {
+            val data = EitherT(IO.just(response.data.toEither { CharacterError.NotFoundError })).bind()
             data.results
         }.value().fix()
     }
